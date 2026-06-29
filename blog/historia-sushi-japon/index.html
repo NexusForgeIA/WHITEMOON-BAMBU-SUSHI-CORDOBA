@@ -125,6 +125,13 @@
   .footer-bottom a { color: var(--verde); }
   @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 36px; } aside.sidebar { position: static; } }
   @media (max-width: 680px) { .nav-links { display: none; } .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; } }
+  /* ─── CTA Blog · Pide ahora ─── */
+  .blog-cta { background: linear-gradient(135deg, #0a160d 0%, #0f1f11 100%); border-top: 1px solid var(--border); padding: 64px 0; text-align: center; position: relative; overflow: hidden; }
+  .blog-cta::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% -10%, rgba(74,222,128,.16), transparent 60%); pointer-events: none; }
+  .blog-cta-inner { position: relative; max-width: 640px; margin: 0 auto; padding: 0 28px; }
+  .blog-cta h2 { font-size: clamp(28px, 4.4vw, 42px); color: var(--verde); margin-bottom: 12px; }
+  .blog-cta p { color: var(--texto2); font-size: 17px; font-weight: 300; margin-bottom: 28px; }
+  .blog-cta .btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -215,6 +222,18 @@
   </div>
 </main>
 
+<!-- ─────── CTA BLOG · Pide ahora ─────── -->
+<section class="blog-cta" aria-labelledby="blogCtaTitle">
+  <div class="blog-cta-inner">
+    <h2 id="blogCtaTitle">¿Con ganas de sushi?</h2>
+    <p>Haz tu pedido ahora o reserva tu mesa. En menos de 2 minutos.</p>
+    <div class="btn-row">
+      <a class="btn btn-verde" href="/?chat=pedido" data-cta-blog="pedido">🍣 Pedir ahora</a>
+      <a class="btn btn-outline" href="/?chat=reserva" data-cta-blog="reserva">📅 Reservar mesa</a>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="container">
     <div class="footer-grid">
@@ -246,6 +265,26 @@
     </div>
   </div>
 </footer>
+
+<script>
+  /* CTA Blog → abre el chatbot de la home (/?chat=) y registra el evento GA4 cta_blog_click */
+  (function () {
+    var links = document.querySelectorAll('.blog-cta [data-cta-blog]');
+    Array.prototype.forEach.call(links, function (el) {
+      el.addEventListener('click', function (e) {
+        var tipo = el.getAttribute('data-cta-blog');
+        var url = el.getAttribute('href');
+        e.preventDefault();
+        var navigated = false;
+        var go = function () { if (!navigated) { navigated = true; window.location.href = url; } };
+        try {
+          gtag('event', 'cta_blog_click', { tipo: tipo, articulo: document.title, event_callback: go });
+        } catch (err) {}
+        setTimeout(go, 500);
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
